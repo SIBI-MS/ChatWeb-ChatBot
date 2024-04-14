@@ -7,10 +7,12 @@ from langchain.embeddings import FlagEmbeddings
 from dotenv import load_dotenv
 import os
 
+#for loading the .env file to take api
 load_dotenv()
+
 #Storing apikey and model name
 os.environ['HUGGINGFACE_API_KEY']=os.getenv("HUGGINGFACE_API_KEY")
-model_id = 'tiiuae/falcon-7b-instruct'
+model_id = 'meta-llama/Llama-2-7b'
 
 #for get response to the user
 def get_response(user_input):
