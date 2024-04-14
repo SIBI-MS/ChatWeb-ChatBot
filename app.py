@@ -1,7 +1,16 @@
 import streamlit as st
-from langchain_core.messages import AIMessage, HumanMessage
-from langchain_community.document_loaders import WebBaseLoader  
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_core.messages import AIMessage, HumanMessage #schemas
+from langchain_community.document_loaders import WebBaseLoader  #load content from url
+from langchain.text_splitter import RecursiveCharacterTextSplitter #used make chunks using the contents from url
+from langchain_community.vectorstores import Chroma #to store vectors created my using the above chunks
+from langchain.embeddings import FlagEmbeddings
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+#Storing apikey and model name
+os.environ['HUGGINGFACE_API_KEY']=os.getenv("HUGGINGFACE_API_KEY")
+model_id = 'tiiuae/falcon-7b-instruct'
 
 #for get response to the user
 def get_response(user_input):
@@ -10,15 +19,26 @@ def get_response(user_input):
 #storing the contents from the url
 def get_vector_store_from_url(url):
     loader=WebBaseLoader(url)
+    
+    #store contents from url
     documents=loader.load()
+    
+    #creating chunks
     documents=get_chunks(documents)
-    return documents
+    
+    #storing vectors in chroma
+    vector_store=Chroma.from_documents(documents_chunks,FlagEmbeddings())
+    
+    return vector_store
 
 #creating chunks using the website contents
 def get_chunks(documents):
     text_splitter=RecursiveCharacterTextSplitter()
     documents_chunks=text_splitter.split_documents(documents)
     return documents_chunks
+
+
+
 
 #App config
 st.set_page_config(page_title="ChatWeb",page_icon='🤖')
@@ -39,8 +59,8 @@ if web_url is None or web_url=='':
     st.info("Please enter a valid URL")
 else:
     documents_chunks=get_vector_store_from_url(web_url)
-    with st.sidebar:
-        st.write(documents_chunks)
+    # with st.sidebar:
+    #     st.write(documents_chunks)
     
     #Created the chat input
     user_input=st.chat_input("Ask your questions...")
