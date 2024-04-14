@@ -1,8 +1,16 @@
 import streamlit as st
 from langchain_core.messages import AIMessage, HumanMessage
+from langchain_community.document_loaders import WebBaseLoader  
 
+#for get response to the user
 def get_response(user_input):
     return "I dont know"
+
+#storing the vectors of chunks
+def vector_store_from_url(url):
+    loader=WebBaseLoader(url)
+    documents=loader.load()
+    return documents
 
 #App config
 st.set_page_config(page_title="ChatWeb",page_icon='🤖')
