@@ -1,14 +1,16 @@
+import os
 import streamlit as st
 from langchain_core.messages import AIMessage, HumanMessage #schemas
 from langchain_community.document_loaders import WebBaseLoader  #load content from url
 from langchain.text_splitter import RecursiveCharacterTextSplitter #used make chunks using the contents from url
 from langchain_community.vectorstores import Chroma #to store vectors created my using the above chunks
-from langchain.embeddings import FlagEmbeddings
+from langchain_community.embeddings import HuggingFaceInstructEmbeddings
 from dotenv import load_dotenv
-import os
+from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_community.llms import HuggingFaceHub
 from langchain_core.prompts import ChatPromptTemplate,MessagesPlaceholder
-from langchain.chains import create_history_aware_retriever
+from langchain.chains import create_history_aware_retriever, create_retrieval_chain
+from sentence_transformers import SentenceTransformer
 
 
 #for loading the .env file to take api
@@ -16,7 +18,7 @@ load_dotenv()
 
 #Storing apikey and model name
 os.environ['HUGGINGFACE_API_KEY']=os.getenv("HUGGINGFACE_API_KEY")
-model_id = 'meta-llama/Llama-2-7b'
+model_id = 'tiiuae/falcon-7b-instruct'
 
 #for get response to the user
 def get_response(user_input):
@@ -30,10 +32,11 @@ def get_vector_store_from_url(url):
     documents=loader.load()
     
     #creating chunks
-    documents=get_chunks(documents)
+    documents_chunks=get_chunks(documents)
     
     #storing vectors in chroma
-    vector_store=Chroma.from_documents(documents_chunks,FlagEmbeddings())
+    embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl")
+    vector_store=Chroma.from_documents(documents_chunks,embeddings)
     
     return vector_store
 
@@ -54,11 +57,25 @@ def get_context_retriever_chain(vector_store):
     prompt=ChatPromptTemplate.from_messages([
         MessagesPlaceholder(variable_name="chat_history"),
         ('user',"{input}"),
-        ("user","Nothing")
+        ("user","Given the above conversation, generate a search query to look up in order to get information relevent to the conversation_")
     ])
     retriever_chain=create_history_aware_retriever(llm,retriever,prompt)
     return retriever_chain
     
+
+#
+def get_conversational_rag_chain(retriever_chain):
+    llm=HuggingFaceHub(
+        huggingfacehub_api_token=os.environ['HUGGINGFACE_API_KEY'],
+        repo_id=model_id,
+        model_kwargs={"temperature": 0.7, "max_new_tokens": 500}
+    )
+    prompt=ChatPromptTemplate.from_messages([
+        ('system','Answer the users questions based on the below context:\n\n{context}'),
+        MessagesPlaceholder(variable_name="chat_history"),
+        ("user","{input}"),
+    ])
+    stuff_documents_chain=create_stuff_documents_chain(llm,prompt)
 
 #App config
 st.set_page_config(page_title="ChatWeb",page_icon='🤖')
