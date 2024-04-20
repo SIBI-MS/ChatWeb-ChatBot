@@ -3,6 +3,8 @@
 
 ChatWeb ChatBot is an open-source chatbot that allows users to provide a website URL as input and ask questions based on the contents of the webpage. It is built using the Langchain framework, Streamlit for the user interface, the Llama-2-7b-chat-hf model for natural language understanding and generation, and the Instruct embeddings model.
 
+![ChatWeb Logo](chatweb.png)
+
 ## Features
 
 - Accepts website URLs as input and extracts information from the webpage.
