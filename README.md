@@ -1,14 +1,14 @@
 
 # ChatWeb
 
-ChatWeb ChatBot is an open-source chatbot that allows users to provide a website URL as input and ask questions based on the contents of the webpage. It is built using the Langchain framework, Streamlit for the user interface, the phi-3/Llama-2-7b-chat-hf model for natural language understanding and generation, and the Instruct embeddings model.
+ChatWeb ChatBot is an open-source chatbot that allows users to provide a website URL as input and ask questions based on the contents of the webpage. It is built using the Langchain framework, Streamlit for the user interface, the phi-3 model for natural language understanding and generation, and the BAAI/bge-small-en-v1.5 embeddings model.
 
 ![ChatWeb Logo](chatweb.png)
 
 ## Features
 
 - Accepts website URLs as input and extracts information from the webpage.
-- Uses the phi-3/Llama-2-7b-chat-hf model for natural language understanding and generation.
+- Uses the phi-3 model for natural language understanding and generation.
 - Utilizes the Instruct embeddings model for understanding and processing textual data.
 - Provides a user-friendly interface powered by Streamlit.
 
@@ -30,11 +30,11 @@ pip install langchain streamlit
 
 ## Usage
 
-1. Clone the WebLink ChatBot repository:
+1. Clone the ChatWeb-ChatBot repository:
 
 ```
 git clone https://github.com/yourusername/ChatWeb-ChatBot.git
-cd WebLinkChatBot
+cd ChatWeb-ChatBor
 ```
 
 2. Install the dependencies:
