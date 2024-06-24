@@ -71,4 +71,4 @@ Contributions to WebLink ChatBot are welcome! If you'd like to contribute, pleas
 For questions, feedback, or support, please contact [sibims00@email.com](mailto:sibims00@email.com).
 ```
 
-Feel free to customize this template with your project's specific details, such as installation instructions, usage examples, and acknowledgments.
+
